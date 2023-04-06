@@ -1,0 +1,7 @@
+{{#sprites}}
+// {{name}}
+export const {{rustName}}_HEIGHT = {{height}};
+export const {{rustName}}_WIDTH = {{width}};
+export const {{rustName}}_FLAGS = {{flags}};
+export const {{rustName}}_TEX = memory.data<u8>([ {{bytes}}]);;
+{{/sprites}}

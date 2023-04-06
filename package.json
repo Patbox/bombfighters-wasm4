@@ -1,0 +1,13 @@
+{
+  "name": "wasm4test",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "asc --target release",
+    "build:export": "asc --target release && w4 bundle build/cart.wasm --title \"BombFighters\" --html build/index.html",
+    "textures": "w4 png2src -t textureTemplate.txt -o src/texture.ts ./assets/textures/*",
+    "build:debug": "asc --target debug"
+  },
+  "devDependencies": {
+    "assemblyscript": "^0.21.3"
+  }
+}
