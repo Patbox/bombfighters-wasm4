@@ -170,13 +170,14 @@ export class SelectGameMode extends GameState {
 			setColors(0, this.seletedOption == i ? 4 : 2, 0, 0);
 			const option = OPTIONS[i];
 			let name = option.name(this);
-			if (this.seletedOption == i) {
-				name = '>' + name;
-			} else {
-				name = ' ' + name;
-			}
+			Font.F6x8.draw(name, 3 + 8, option.y);
 
-			Font.F6x8.draw(name, 3, option.y);
+			if (this.seletedOption == i) {
+				const alt = (this.tick / 20) % 2 == 0;
+				const altD = alt ? 0 : 2
+				setColors(alt ? 4 : 3, 0, 0, 0);
+				w4.text(">", 2 + altD, option.y);
+			}
 		}
 
 		const gamepad = load<u8>(w4.GAMEPAD1);

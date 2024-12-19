@@ -14,6 +14,8 @@ import { StartingPowerUps } from '../menu/selectGame';
 export class Stats {
 	static VOID: Stats = new Stats();
 
+
+	place: u8 = 255;
 	score: i8 = 0; 
 	bombs: u32 = 0; 
 	kills: u32 = 0; 
@@ -175,11 +177,13 @@ export class MultiplayerGame extends GameState {
 						break;
 					}
 				}
-
+				
 				if (playerMaxWin == 0) {
 					const newGame = new MultiplayerGame(this.changer, this.startingUpgrades, this.players[1] != null, this.players[2] != null, this.players[3] != null, this.endOnWinCount, this.mapId, this.stats);
 					this.changer(newGame);
 				} else {
+					
+
 					this.changer(new WinScreen(this.changer, this.stats, this.endOnWinCount, this.startingUpgrades));
 				}
 			} else {
@@ -206,71 +210,9 @@ export class MultiplayerGame extends GameState {
 	runWorldLogic(): void {
 		runGC();
 
-		const screenTiles: i16 = i8(w4.SCREEN_SIZE / PIXEL_PER_TILE + 1);
 		const cameraDeltaX: i16 = 5;
 		const cameraDeltaY: i16 = 10;
-
-		for (let x: i16 = -1; x <= screenTiles; x++) {
-			for (let y: i16 = 0; y <= screenTiles; y++) {
-				const tile = this.world.getTile(clamp16(x, 0, this.world.width - 1), clamp16(y, 0, this.world.height - 1));
-				setColorData(tile.color);
-
-				let flags = 0;
-				if (tile.randomRotation) {
-					let val: i32 = (31 * x + 17 * y) / 2;
-
-					if (val & 0x01) {
-						flags |= w4.BLIT_ROTATE;
-					}
-
-					if (val & 0x02) {
-						flags |= w4.BLIT_FLIP_X;
-					}
-
-					if (val & 0x04) {
-						flags |= w4.BLIT_FLIP_Y;
-					}
-				}
-
-				w4.blitSub(
-					Texture.TILES_TEX,
-					x * PIXEL_PER_TILE + cameraDeltaX,
-					y * PIXEL_PER_TILE + cameraDeltaY,
-					PIXEL_PER_TILE,
-					PIXEL_PER_TILE,
-					tile.texture * PIXEL_PER_TILE,
-					0,
-					Texture.TILES_WIDTH,
-					tile.textureFlags | w4.BLIT_2BPP | flags
-				);
-
-				if (tile.border != Tiles.BorderType.NONE && x >= 0 && y >= 0 && x < i16(this.world.width) && y < i16(this.world.height)) {
-					setColors(4, 4, 4, 4);
-
-					for (let i: u8 = 0; i < 2; i++) {
-						const dir = i == 0 ? -1 : 1;
-						const xDelta = i == 0 ? 0 : PIXEL_PER_TILE - 1;
-
-						const typeX = this.world.getTile(u16(x + dir), y);
-						const typeY = this.world.getTile(x, u16(y + dir));
-
-						if (
-							!((i == 0 && x == 0) || (i == 1 && x == this.world.width - 1)) &&
-							((tile.border == Tiles.BorderType.NON_COLLIDABLE && !typeX.collisions) || (tile.border == Tiles.BorderType.NON_SELF && typeX != tile))
-						) {
-							w4.vline(x * PIXEL_PER_TILE + cameraDeltaX + xDelta, y * PIXEL_PER_TILE + cameraDeltaY, PIXEL_PER_TILE);
-						}
-
-						if (
-							!((i == 0 && y == 0) || (i == 1 && y == this.world.height - 1)) &&
-							((tile.border == Tiles.BorderType.NON_COLLIDABLE && !typeY.collisions) || (tile.border == Tiles.BorderType.NON_SELF && typeY != tile))
-						) {
-							w4.hline(x * PIXEL_PER_TILE + cameraDeltaX, y * PIXEL_PER_TILE + cameraDeltaY + xDelta, PIXEL_PER_TILE);
-						}
-					}
-				}
-			}
-		}
+		this.world.drawTiles(cameraDeltaX, cameraDeltaY)
 		runGC();
 
 		const ents = this.world.getEntities();

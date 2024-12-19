@@ -4,7 +4,7 @@
   "scripts": {
     "build": "asc --target release",
     "build:export": "asc --target release && w4 bundle build/cart.wasm --title \"BombFighters\" --html docs/index.html",
-    "textures": "w4 png2src -t textureTemplate.txt -o src/texture.ts ./assets/textures/*",
+    "textures": "w4 png2src -t textureTemplate.txt -o src/texture.ts assets/textures/*",
     "build:debug": "asc --target debug"
   },
   "devDependencies": {

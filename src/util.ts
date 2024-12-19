@@ -1,6 +1,6 @@
 import * as w4 from "./wasm4";
 
-export const VERSION_TEXT = "v0.1.1 by Patbox";
+export const VERSION_TEXT = "v0.1.2 by Patbox";
 
 export const CARDINAL_DIRECTIONS: StaticArray<StaticArray<i8>> = [
 	[0, 1],

@@ -7,9 +7,11 @@ import * as Font from '../fonts';
 import { SelectGameMode } from "./selectGame";
 import { ButtonType, Option, SimpleOption } from "./options";
 import { Credits } from "./credits";
+import { MAPS, WORLD_SIZE } from "../game/worlds/world_vs";
+import { World } from "../game/world";
 
 const OPTIONS: StaticArray<Option<MainMenu>> = [
-	new SimpleOption<MainMenu>(100, () => "VS Game!", (selector, button) => {
+	new SimpleOption<MainMenu>(100, () => "VS! Game", (selector, button) => {
 		if (button == ButtonType.X) {
 			// @ts-ignore
 			Math.seedRandom(selector.tick);
@@ -34,12 +36,18 @@ export class MainMenu extends GameState {
 
 	public update(): void {
 		this.tick++;
+		const alt = (this.tick / 20) % 2 == 0;
+
+		const sinVal = 0//<i32>(Math.sin(<f32>this.tick / 60.0) * 3 + 3)
 
 		setColors(2, 3, 0, 4)
-		w4.blit(Texture.LOGO_TEX, (w4.SCREEN_SIZE - 128) / 2, 0, Texture.LOGO_WIDTH, Texture.LOGO_HEIGHT, Texture.LOGO_FLAGS);
+		w4.blit(Texture.LOGO_TEX, (w4.SCREEN_SIZE - 128) / 2, sinVal, Texture.LOGO_WIDTH, Texture.LOGO_HEIGHT, Texture.LOGO_FLAGS);
 		
-		setColors((this.tick / 20) % 2 == 0 ? 4 : 3, 0, 0, 0)
-		
+
+		w4.blitSub(Texture.LOGO_FLAME_TEX, (w4.SCREEN_SIZE - 128) / 2 + 75, sinVal, 24, Texture.LOGO_FLAME_HEIGHT, 
+				alt ? 24 : 0, 0, Texture.LOGO_FLAME_WIDTH, Texture.LOGO_FLAME_FLAGS);
+
+
 		setColors(0, 4, 0, 0)
 		Font.F4x6.drawCentered(VERSION_TEXT, w4.SCREEN_SIZE / 2, 160 - 7)
 
@@ -48,11 +56,15 @@ export class MainMenu extends GameState {
 			setColors(this.seletedOption == i ? 4 : 2, 0, 0, 0);
 			const option = OPTIONS[i];
 			let name = option.name(this);
-			if (this.seletedOption == i) {
-				name = '> ' + name + " <";
-			}
 
 			w4.text(name, w4.SCREEN_SIZE / 2 - name.length * 4, option.y);
+			if (this.seletedOption == i) {
+				const altD = alt ? 0 : 2
+				setColors(this.seletedOption == i ? alt ? 4 : 3 : 2, 0, 0, 0);
+				w4.text(">", w4.SCREEN_SIZE / 2 - (name.length + 3) * 4 + altD, option.y);
+				w4.text("<", w4.SCREEN_SIZE / 2 + (name.length + 1) * 4 - altD, option.y);
+			}
+
 		}
 
 		const gamepad = load<u8>(w4.GAMEPAD1);
@@ -71,5 +83,14 @@ export class MainMenu extends GameState {
 		}
 
 		this.lastGamepad = gamepad;
+
+		//this.debugMap()
+	}
+
+	debugMap(): void {
+		const map = MAPS[3];
+		const world = World.fromMap(map)
+
+		world.drawTiles(0, 0)
 	}
 }

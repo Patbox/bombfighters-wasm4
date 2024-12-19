@@ -1,5 +1,5 @@
 import { MultiplayerGame, Stats } from '../game/main';
-import { setPlayerColor } from '../game/player';
+import { RUN_ANIM_X, setPlayerColor } from '../game/player';
 import { GameState, GameStateChanger } from '../gameState';
 import * as Texture from '../texture';
 import { setColors, zeroLeadingNumber } from '../util';
@@ -33,6 +33,8 @@ export class WinScreen extends GameState {
 
 	public update(): void {
 		this.tick++;
+		const walkFrame = RUN_ANIM_X[(this.tick / 6) % RUN_ANIM_X.length];
+
 
 		for (let i: u8 = 0; i < 4; i++) {
 			if (this.stats[i].score == -1) {
@@ -43,7 +45,7 @@ export class WinScreen extends GameState {
 
 			setPlayerColor(i);
 
-			w4.blitSub(Texture.PLAYER_TEX, center - 5, 20, 10, 10, 10 * 1, 0, Texture.PLAYER_WIDTH, Texture.PLAYER_FLAGS);
+			w4.blitSub(Texture.PLAYER_TEX, center - 5, 20, 10, 10, 10 * walkFrame, 0, Texture.PLAYER_WIDTH, Texture.PLAYER_FLAGS);
 
 			setColors(0, 4, 0, 0);
 			Font.F4x6.drawCentered('Player ' + (i + 1).toString(), center, 30);
@@ -67,9 +69,15 @@ export class WinScreen extends GameState {
 		let name = "Final Score!";
 		w4.text(name, w4.SCREEN_SIZE / 2 - (name.length * 8) / 2, 1);
 
-		name = "> Press X to continue <";
+		name = "New VS! Game";
 		w4.text(name, w4.SCREEN_SIZE / 2 - (name.length * 8) / 2, 150);
 		
+		const alt = (this.tick / 20) % 2 == 0;
+		const altD = alt ? 0 : 2
+		setColors(alt ? 4 : 3, 0, 0, 0);
+		w4.text(">", w4.SCREEN_SIZE / 2 - (name.length + 3) * 4 + altD, 150);
+		w4.text("<", w4.SCREEN_SIZE / 2 + (name.length + 1) * 4 - altD, 150);
+	
 
 		const gamepad = load<u8>(w4.GAMEPAD1);
 		if (gamepad & w4.BUTTON_1 && (gamepad & w4.BUTTON_1) != (this.lastGamepad & w4.BUTTON_1)) {

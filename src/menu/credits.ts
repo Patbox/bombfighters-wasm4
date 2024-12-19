@@ -11,6 +11,7 @@ import { MainMenu } from './main';
 
 export class Credits extends GameState {
 	lastGamepad: u8;
+	tick: u32 = 0;
 
 
 	constructor(changer: GameStateChanger) {
@@ -19,7 +20,7 @@ export class Credits extends GameState {
 	}
 
 	public update(): void {
-
+		this.tick++;
 		setColors(4, 0, 0, 0);
 		let name = "Credits";
 		w4.text(name, w4.SCREEN_SIZE / 2 - (name.length * 8) / 2, 1);
@@ -32,9 +33,14 @@ export class Credits extends GameState {
 		Font.F6x8.drawCentered("OpenZoo by asie", w4.SCREEN_SIZE / 2, 60);
 
 		setColors(4, 0, 0, 0);
-		name = "> Return to Menu <";
+		name = "Return to Menu";
 		w4.text(name, w4.SCREEN_SIZE / 2 - (name.length * 8) / 2, 150);
-		
+		const alt = (this.tick / 20) % 2 == 0;
+		const altD = alt ? 0 : 2
+		setColors(alt ? 4 : 3, 0, 0, 0);
+		w4.text(">", w4.SCREEN_SIZE / 2 - (name.length + 3) * 4 + altD, 150);
+		w4.text("<", w4.SCREEN_SIZE / 2 + (name.length + 1) * 4 - altD, 150);
+	
 
 		const gamepad = load<u8>(w4.GAMEPAD1);
 		if (gamepad & w4.BUTTON_1 && (gamepad & w4.BUTTON_1) != (this.lastGamepad & w4.BUTTON_1)) {
